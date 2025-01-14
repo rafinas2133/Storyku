@@ -1,0 +1,30 @@
+image: node:latest
+
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  script:
+    - npm install
+  artifacts:
+    paths:
+      - node_modules/
+      - app.js
+      - config/
+      - controllers/
+      - models/
+      - routes/
+      - package.json
+      - package-lock.json
+
+deploy:
+  stage: deploy
+  script:
+    - apt-get update -qq && apt-get install -y -qq sshpass
+    - sshpass -p $SSH_PASSWORD ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "mkdir -p /var/www/api.storyku.site"
+    - sshpass -p $SSH_PASSWORD scp -o StrictHostKeyChecking=no -r ./* $SSH_USER@$SSH_HOST:/var/www/api.storyku.site/
+    - sshpass -p $SSH_PASSWORD ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "cd /var/www/api.storyku.site && npm install -g pm2 && pm2 restart storyku-api || pm2 start app.js --name storyku-api"
+  only:
+    - main

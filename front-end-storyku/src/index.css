@@ -1,0 +1,13 @@
+@import "flowbite";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.quill-disabled .ql-editor {
+    background-color: #f3f4f6;
+    cursor: not-allowed;
+}
+
+.quill-disabled .ql-toolbar {
+    display: none;
+}
